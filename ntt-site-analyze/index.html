@@ -220,6 +220,68 @@ body.side #resetView{right:56px}
   #portrait{display:flex;position:fixed;inset:0;z-index:100;background:var(--bg);color:var(--ink);align-items:center;justify-content:center;padding:32px;text-align:center;font-size:17px;line-height:1.7}
 }
 @media (prefers-reduced-motion: reduce){ .pg,.sd,.pin{transition:none !important} }
+
+/* ---------- phone portrait layout (body.portrait, set by JS) ---------- */
+#portrait{display:none!important}
+#sheet,#sheetTog{display:none}
+body.portrait #stage{left:0;top:0;transform:none}
+body.portrait #gl{width:100%!important;height:100%!important}
+body.portrait .scrimL,body.portrait .scrimR,body.portrait .scrimB{display:none}
+body.portrait header#top{left:12px;right:10px;top:8px;height:36px}
+body.portrait #mark{font-size:13px;gap:8px}
+body.portrait #mark span{display:none}
+body.portrait #tools{gap:4px}
+body.portrait .tb{height:32px;padding:0 9px;font-size:12px;gap:0}
+body.portrait .tb span{display:none}
+body.portrait #tFull{display:none}
+body.portrait #resetView{top:50px;right:10px;font-size:12px;height:30px}
+body.portrait #mapkey{right:8px;bottom:auto;top:calc(var(--sheetTop) - 64px);transform:scale(.62);transform-origin:right bottom;gap:10px}
+body.portrait #dragHint{bottom:auto;top:calc(var(--sheetTop) - 46px);font-size:12px;white-space:nowrap}
+body.portrait .pin{font-size:11.5px}
+body.portrait .pin small{font-size:10px}
+body.portrait .pin b{padding:2px 6px}
+body.portrait .pin.num b{width:24px;height:24px;font-size:12px}
+body.portrait #sheet{display:block;position:absolute;left:0;right:0;top:var(--sheetTop);bottom:56px;z-index:15;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 16px 28px;background:var(--bg);border-top:1px solid var(--rule2);box-shadow:0 -10px 24px rgba(0,0,0,.08);transition:top .35s ease}
+body.portrait.sheet-up #sheet{top:16%}
+body.portrait #sheetTog{display:grid;place-items:center;position:absolute;left:50%;top:calc(var(--sheetTop) - 17px);transform:translateX(-50%);z-index:16;width:64px;height:28px;border:1px solid var(--rule2);border-radius:14px 14px 0 0;border-bottom:0;background:var(--bg);color:var(--ink2);font-size:13px;cursor:pointer;transition:top .35s ease}
+body.portrait.sheet-up #sheetTog{top:calc(16% - 17px)}
+body.portrait #panel,body.portrait #side{position:static;width:auto;inset:auto}
+body.portrait #side{margin-top:22px;padding-top:4px;border-top:1px solid var(--rule2)}
+body.portrait .pg,body.portrait .sd{position:static;display:none;opacity:1;visibility:visible;transition:none}
+body.portrait .pg.on,body.portrait .sd.on{display:flex}
+body.portrait .mk{font-size:12.5px;margin:0 0 10px}
+body.portrait .mk .no{font-size:12.5px}
+body.portrait h1{font-size:34px;margin:0 0 12px}
+body.portrait h2,html[lang="en"] body.portrait h2{font-size:26px;line-height:1.2;margin:0 0 12px}
+body.portrait h2 br,body.portrait h1 br{display:none}
+body.portrait .lede,html[lang="en"] body.portrait .lede{font-size:14.5px;line-height:1.7;margin:0 0 14px}
+body.portrait .figs{gap:12px 16px;padding:14px 0 2px;margin:0 0 14px}
+body.portrait .fig .n,body.portrait .figs.three .fig .n{font-size:28px}
+body.portrait .fig .n small{font-size:12px}
+body.portrait .fig .l{font-size:11.5px;margin-top:5px}
+body.portrait .nt,html[lang="en"] body.portrait .nt{font-size:13.5px;line-height:1.6}
+body.portrait .src{font-size:11px;margin-top:14px}
+body.portrait .hint,body.portrait .shint,body.portrait .cue{font-size:12px}
+body.portrait .focus-grid button,body.portrait .route-choices button,body.portrait .sec-routes button{font-size:13.5px;padding:9px 11px}
+body.portrait .tl li{grid-template-columns:70px 1fr}
+body.portrait .tl li span{font-size:13.5px}
+body.portrait .lgd > div{font-size:13.5px}
+body.portrait .mxb span{font-size:13.5px}
+body.portrait .mxb p{font-size:12.5px}
+body.portrait .sd h3{font-size:14px;margin:16px 0 8px}
+body.portrait .ro .n{font-size:28px}
+body.portrait .card .yr{font-size:32px}
+body.portrait .card .cap{min-height:0;font-size:13.5px}
+body.portrait .bar{font-size:12.5px}
+body.portrait #side svg{max-width:100%;height:auto}
+body.portrait #rail{left:6px;right:6px;bottom:6px;height:44px;gap:6px;align-items:center}
+body.portrait #chap{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;align-self:stretch;align-items:flex-end}
+body.portrait #chap::-webkit-scrollbar{display:none}
+body.portrait .grp{flex:none;flex-direction:row;gap:0}
+body.portrait .grp > span{display:none}
+body.portrait .grp > div{gap:0}
+body.portrait #chap button{flex:none;min-width:auto;padding:10px 10px 4px;font-size:12px}
+body.portrait .arr{width:38px;height:38px;font-size:17px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 </head>
@@ -1679,20 +1741,20 @@ var NTTB = (function () {
     n.position.set(o.x + s * Math.sin(t) * Math.cos(a), o.y + s * Math.sin(a), o.z - s * Math.cos(t) * Math.cos(a)),
       n.up.set(0, 1, 0),
       n.lookAt(o);
-    let r = (G.span * B.zoom) / 2,
+    let r = (G.span * B.zoom * (w.portrait ? PF : 1)) / 2,
       h = (r * Ge) / Ce;
     (n.left = -r),
       (n.right = r),
       (n.top = h),
       (n.bottom = -h),
-      n.setViewOffset(Ce, Ge, -(G.cx - Ce / 2), 0, Ce, Ge),
+      w.portrait ? n.setViewOffset(Ce, Ge, 0, -((w.cy || Ge / 2) - Ge / 2), Ce, Ge) : n.setViewOffset(Ce, Ge, -(G.cx - Ce / 2), 0, Ce, Ge),
       n.updateProjectionMatrix();
   }
   function Jt() {
     return G.az + B.daz;
   }
   function va() {
-    return G.span * B.zoom;
+    return G.span * B.zoom * (w.portrait ? PF : 1);
   }
   function Ct(e, n) {
     let t = Yt(e),
@@ -3283,11 +3345,51 @@ void main() {`,
     let n = getComputedStyle(document.documentElement).getPropertyValue(e).trim() || "#888";
     return new u.Color(n);
   }
+  /* phone portrait: scale-1 stage, 3D on top, chapter text in a scrolling sheet below */
+  var PF = 0.62;
+  function layoutMode(pt) {
+    let st = M("#stage"),
+      sh = M("#sheet"),
+      tg = M("#sheetTog");
+    if (!sh) {
+      (sh = document.createElement("div")), (sh.id = "sheet"), st.insertBefore(sh, M("#mapkey"));
+      (tg = document.createElement("button")), (tg.id = "sheetTog"), (tg.type = "button"), (tg.textContent = "︿"), tg.setAttribute("aria-label", "展開或收合說明"), st.insertBefore(tg, sh);
+      tg.onclick = () => {
+        let up = document.body.classList.toggle("sheet-up");
+        tg.textContent = up ? "﹀" : "︿";
+      };
+      let gl = M("#gl"),
+        pd = null,
+        dist = (e) => Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      gl.addEventListener("touchstart", (e) => { e.touches.length === 2 && ((pd = dist(e)), (B.dragging = !1)); }, { passive: !0 });
+      gl.addEventListener("touchmove", (e) => {
+        if (e.touches.length !== 2 || !pd) return;
+        let d = dist(e);
+        (B.zoom = K((B.zoom * pd) / d, 0.3, 3)), (pd = d), (B.touched = !0), M("#resetView").classList.add("on");
+      }, { passive: !0 });
+      gl.addEventListener("touchend", (e) => { e.touches.length < 2 && (pd = null); });
+    }
+    if (pt) sh.appendChild(M("#panel")), sh.appendChild(M("#side"));
+    else st.insertBefore(M("#panel"), sh), st.insertBefore(M("#side"), sh), document.body.classList.remove("sheet-up");
+    document.body.classList.toggle("portrait", pt);
+  }
   function Hn() {
-    let e = Math.min(innerWidth / Ce, innerHeight / Ge);
-    (w.K = e), (M("#stage").style.transform = `translate(-50%,-50%) scale(${e})`);
-    let n = K(e * (devicePixelRatio || 1), 0.75, 2);
-    Math.abs(w.renderer.getPixelRatio() - n) > 0.01 && (w.renderer.setPixelRatio(n), w.renderer.setSize(Ce, Ge, !1));
+    let pt = innerHeight > innerWidth * 1.05,
+      st = M("#stage");
+    pt !== !!w.portrait && layoutMode(pt), (w.portrait = pt);
+    if (pt) {
+      (Ce = Math.round(innerWidth)), (Ge = Math.round(innerHeight)), (w.K = 1);
+      (st.style.width = Ce + "px"), (st.style.height = Ge + "px"), (st.style.transform = "none");
+      let top = Math.round(Ge * 0.54);
+      st.style.setProperty("--sheetTop", top + "px"), (w.cy = Math.round(top * 0.5) + 20), (w.sheetTop = top);
+    } else {
+      (Ce = 1920), (Ge = 1080), (st.style.width = ""), (st.style.height = "");
+      let e = Math.min(innerWidth / Ce, innerHeight / Ge);
+      (w.K = e), (st.style.transform = `translate(-50%,-50%) scale(${e})`);
+    }
+    let n = K((pt ? 1 : w.K) * (devicePixelRatio || 1), 0.75, 2),
+      sz = w.renderer.getSize(new u.Vector2());
+    (Math.abs(w.renderer.getPixelRatio() - n) > 0.01 || sz.x !== Ce || sz.y !== Ge) && (w.renderer.setPixelRatio(n), w.renderer.setSize(Ce, Ge, !1));
   }
   var ce = { ctx: null, on: !1 };
   function Pn() {
@@ -3381,10 +3483,10 @@ void main() {`,
     t && (t.w = n);
   }
   function Na() {
-    let e = document.body.classList.contains("side") ? 1470 : 1880;
+    let e = w.portrait ? Ce - 4 : document.body.classList.contains("side") ? 1470 : 1880;
     for (let n of nt.values()) {
       let [t, a] = xa(n.w[0], n.w[1], n.w[2]),
-        s = t > (n.minX ?? 640) && t < e && a > 96 && a < 950;
+        s = w.portrait ? t > 4 && t < e && a > 46 && a < w.sheetTop - 4 : t > (n.minX ?? 640) && t < e && a > 96 && a < 950;
       (n.el.style.left = t.toFixed(1) + "px"),
         (n.el.style.top = a.toFixed(1) + "px"),
         n.dead || n.el.classList.toggle("dim", !s);
@@ -3476,7 +3578,9 @@ void main() {`,
   }
   function en(e, n) {
     D("#chap button").forEach((t) => {
-      +t.dataset.i === e ? t.setAttribute("aria-current", "step") : t.removeAttribute("aria-current");
+      +t.dataset.i === e
+        ? (t.setAttribute("aria-current", "step"), w.portrait && t.scrollIntoView({ block: "nearest", inline: "center" }))
+        : t.removeAttribute("aria-current");
     }),
       In(e, n);
   }
@@ -7413,7 +7517,7 @@ void main() {`,
       (it = 0),
       (w.camOrbit = null);
     let a = ne[e];
-    la(e), document.body.classList.toggle("side", !!a.sidePanel);
+    la(e), document.body.classList.toggle("side", !!a.sidePanel), w.portrait && M("#sheet") && (M("#sheet").scrollTop = 0);
     let s = a.cam();
     Kt(s, t ? 2.1 : 0.001),
       qa(a.layers || {}),
