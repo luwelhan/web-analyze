@@ -282,6 +282,17 @@ body.portrait .grp > span{display:none}
 body.portrait .grp > div{gap:0}
 body.portrait #chap button{flex:none;min-width:auto;padding:8px 12px;margin:0 2px;font-size:13px;border-radius:16px;scroll-snap-align:center;overflow:visible}body.portrait #chap button::before{display:none}body.portrait #chap button i{display:none}body.portrait #chap button[aria-current="step"]{background:var(--ink);color:var(--bg)}body.portrait #chap button[aria-current="step"] em{color:inherit}body.portrait .arr{width:34px;height:34px;font-size:15px}
 body.portrait .arr{width:38px;height:38px;font-size:17px}
+
+/* ---------- phone (fixed 420-px logical stage, scaled to the screen) ---------- */
+body.portrait #stage{transform-origin:0 0}
+body.portrait header#top{left:0;right:0;top:0;height:44px;padding:0 8px 0 12px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--rule)}
+body.portrait #rail{left:0;right:0;bottom:0;height:52px;padding:0 6px;background:var(--bg);border-top:1px solid var(--rule2)}
+body.portrait #sheet{bottom:52px}
+body.portrait.mland #sheet{top:44px;left:var(--sheetLeft);right:0;border-top:0;border-left:1px solid var(--rule2);box-shadow:-10px 0 24px rgba(0,0,0,.06)}
+body.portrait.mland #sheetTog{display:none}
+body.portrait.mland #mapkey{top:auto;bottom:58px;right:auto;left:calc(var(--sheetLeft) - 150px)}
+body.portrait.mland #dragHint{top:auto;bottom:62px;left:calc(var(--sheetLeft) / 2)}
+body.portrait.mland #resetView{right:auto;left:calc(var(--sheetLeft) - 110px)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 </head>
@@ -1747,7 +1758,7 @@ var NTTB = (function () {
       (n.right = r),
       (n.top = h),
       (n.bottom = -h),
-      w.portrait ? n.setViewOffset(Ce, Ge, 0, -((w.cy || Ge / 2) - Ge / 2), Ce, Ge) : n.setViewOffset(Ce, Ge, -(G.cx - Ce / 2), 0, Ce, Ge),
+      w.portrait ? n.setViewOffset(Ce, Ge, -((w.cx2 || Ce / 2) - Ce / 2), -((w.cy || Ge / 2) - Ge / 2), Ce, Ge) : n.setViewOffset(Ce, Ge, -(G.cx - Ce / 2), 0, Ce, Ge),
       n.updateProjectionMatrix();
   }
   function Jt() {
@@ -3373,21 +3384,35 @@ void main() {`,
     else st.insertBefore(M("#panel"), sh), st.insertBefore(M("#side"), sh), document.body.classList.remove("sheet-up");
     document.body.classList.toggle("portrait", pt);
   }
+  function isPhone() {
+    let coarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches),
+      small = Math.min(screen.width || 9999, screen.height || 9999) <= 820;
+    return (coarse && small) || /Android.+Mobile|iPhone|iPod/i.test(navigator.userAgent);
+  }
   function Hn() {
-    let pt = innerHeight > innerWidth * 1.05,
+    let W = innerWidth,
+      H = innerHeight,
+      phone = isPhone() || (H > W * 1.05 && W < 900),
+      land = phone && W > H * 1.05,
       st = M("#stage");
-    pt !== !!w.portrait && layoutMode(pt), (w.portrait = pt);
-    if (pt) {
-      (Ce = Math.round(innerWidth)), (Ge = Math.round(innerHeight)), (w.K = 1);
-      (st.style.width = Ce + "px"), (st.style.height = Ge + "px"), (st.style.transform = "none");
-      let top = Math.round(Ge * 0.54);
-      st.style.setProperty("--sheetTop", top + "px"), (w.cy = Math.round(top * 0.5) + 20), (w.sheetTop = top);
+    phone !== !!w.portrait && layoutMode(phone), (w.portrait = phone), document.body.classList.toggle("mland", land);
+    if (phone) {
+      let L = 420;
+      land ? ((Ge = L), (Ce = Math.round((L * W) / H))) : ((Ce = L), (Ge = Math.round((L * H) / W)));
+      (w.K = W / Ce), (st.style.width = Ce + "px"), (st.style.height = Ge + "px"), (st.style.transform = `scale(${w.K})`);
+      if (land) {
+        let left = Math.round(Ce * 0.56);
+        st.style.setProperty("--sheetLeft", left + "px"), (w.sheetLeft = left), (w.sheetTop = Ge - 52), (w.cx2 = Math.round(left / 2)), (w.cy = Math.round(Ge / 2));
+      } else {
+        let top = Math.round(Ge * 0.54);
+        st.style.setProperty("--sheetTop", top + "px"), (w.sheetTop = top), (w.sheetLeft = Ce), (w.cx2 = Ce / 2), (w.cy = Math.round(top * 0.5) + 22);
+      }
     } else {
       (Ce = 1920), (Ge = 1080), (st.style.width = ""), (st.style.height = "");
-      let e = Math.min(innerWidth / Ce, innerHeight / Ge);
+      let e = Math.min(W / Ce, H / Ge);
       (w.K = e), (st.style.transform = `translate(-50%,-50%) scale(${e})`);
     }
-    let n = K((pt ? 1 : w.K) * (devicePixelRatio || 1), 0.75, 2),
+    let n = K(w.K * (devicePixelRatio || 1), 0.75, 2),
       sz = w.renderer.getSize(new u.Vector2());
     (Math.abs(w.renderer.getPixelRatio() - n) > 0.01 || sz.x !== Ce || sz.y !== Ge) && (w.renderer.setPixelRatio(n), w.renderer.setSize(Ce, Ge, !1));
   }
@@ -3486,7 +3511,7 @@ void main() {`,
     let e = w.portrait ? Ce - 4 : document.body.classList.contains("side") ? 1470 : 1880;
     for (let n of nt.values()) {
       let [t, a] = xa(n.w[0], n.w[1], n.w[2]),
-        s = w.portrait ? t > 4 && t < e && a > 46 && a < w.sheetTop - 4 : t > (n.minX ?? 640) && t < e && a > 96 && a < 950;
+        s = w.portrait ? t > 4 && t < (w.sheetLeft || Ce) - 4 && a > 46 && a < w.sheetTop - 4 : t > (n.minX ?? 640) && t < e && a > 96 && a < 950;
       (n.el.style.left = t.toFixed(1) + "px"),
         (n.el.style.top = a.toFixed(1) + "px"),
         n.dead || n.el.classList.toggle("dim", !s);
